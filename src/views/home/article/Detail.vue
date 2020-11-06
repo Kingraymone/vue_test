@@ -1,7 +1,7 @@
 <template>
-  <div class="myContainer">
-    <div class="markdown-body" style="max-width: 1100px;margin: 0 auto" v-html="blog.content"></div>
-  </div>
+    <div class="myContainer">
+      <div class="markdown-body" style="max-width: 1100px;margin: 0 auto" v-html="blog.content"></div>
+    </div>
 </template>
 
 <script>

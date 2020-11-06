@@ -90,9 +90,14 @@ const router = new Router({
           meta: { title: '文章详情'}
         },
         {
-          path: '/finance/trend',
+          path: 'finance/trend',
           component: () => import('@/views/home/finance/Trend.vue'),
           meta: { title: '基金走势',keepAlive:true }
+        },
+        {
+          path: 'finance/fund',
+          component: () => import('@/views/home/finance/Fund.vue'),
+          meta: { title: '所有基金',keepAlive:true }
         }
 
         ]

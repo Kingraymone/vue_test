@@ -11,6 +11,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.css'
 // 公共方法
 import commons from './utils/common'
+// 图表
+import echarts from 'echarts'
+
+Vue.prototype.$echarts=echarts;
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);

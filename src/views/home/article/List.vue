@@ -85,6 +85,7 @@
                 :prop="item.prop"
                 :sortable="item.sort"
                 :formatter="item.format"
+                :show-overflow-tooltip='true'
               ></el-table-column>
             </template>
             <el-table-column label="操作">

@@ -124,8 +124,8 @@
                                 title: '基金走势'
                             },
                             {
-                                index: '/sys/home/finance',
-                                title: '基金模拟'
+                                index: '/sys/home/finance/fund',
+                                title: '所有基金'
                             }
                         ]
                     },
@@ -177,7 +177,7 @@
 
 <style scoped>
   .el-menu-vertical:not(.el-menu--collapse) {
-    width: 222px;
+    width: 210px;
   }
   /*{
     background: -webkit-linear-gradient(90deg, rgb(11, 8, 10), rgb(16, 40, 63));

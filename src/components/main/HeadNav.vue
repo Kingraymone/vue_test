@@ -9,7 +9,7 @@
       </div>
     </el-col>
     <el-col :xs="4" :sm="4" :md="4" :lg="4" :xl="4">
-      <div style="text-align: left;line-height: 70px">后台管理系统</div>
+      <div style="text-align: left;line-height: 70px">个人博客系统</div>
     </el-col>
 
     <el-col :offset="10" :xs="8" :sm="8" :md="8" :lg="8" :xl="8">

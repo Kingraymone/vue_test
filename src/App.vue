@@ -44,5 +44,7 @@ export default {
     border: 1px solid #ddd;
     border-radius: 5px;
     margin: 0 auto;
+    position:absolute;
+    width:100%;
   }
 </style>
