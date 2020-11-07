@@ -13,7 +13,11 @@ export default {
 <style>
   @import "./assets/css/main.css";
   @import "./assets/css/color-dark.css";
-
+  /*解决select显示不全*/
+  .el-select-dropdown .el-scrollbar .el-scrollbar__wrap{
+    overflow: scroll;
+  }
+  /*导致select显示不全*/
   .el-scrollbar__wrap{
     overflow-x: hidden;
   }
