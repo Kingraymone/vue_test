@@ -2,8 +2,8 @@
   <el-container direction="vertical" style="height:100%; ">
     <vHeadNav></vHeadNav>
     <el-container direction="horizontal" style="height: 400px">
-      <el-scrollbar style="height:100%;">
-        <MenuNav></MenuNav>
+      <el-scrollbar class="myMenu">
+        <MenuNav style="height: 100%"></MenuNav>
       </el-scrollbar>
       <el-container direction="vertical">
         <TabNav></TabNav>
@@ -23,6 +23,10 @@
   .content4 {
     margin: 10px;
     position:relative;
+  }
+  .myMenu {
+    background: -webkit-linear-gradient(90deg, rgb(11, 8, 10), rgb(16, 40, 63));
+    background: linear-gradient(90deg, rgb(11, 8, 10), rgb(16, 40, 63));
   }
 </style>
 

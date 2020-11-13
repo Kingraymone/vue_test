@@ -26,6 +26,15 @@ export default {
       type: type,
       duration: 1000
     });
+  },
+  kMessageAtTime(msg, type,time) {
+    Message.closeAll();
+    Message({
+      message: msg,
+      center: true,
+      type: type,
+      duration: time
+    });
   }
 }
 

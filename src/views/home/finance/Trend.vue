@@ -12,11 +12,126 @@
         </el-option>
       </el-select>
     </el-row>
-    <el-row><div id="curDay" style="height: 250px;width: auto"></div></el-row>
     <el-row>
-        <div id="historyDay" style="height: 250px;width: auto"></div>
+      <el-col :span="18">
+      <div id="curDay" style="height: 250px;min-width: 400px"></div>
+      </el-col>
+      <el-col :span="5" :offset="1">
+        <ul>
+          <li>实时收益率</li>
+          <li>实时收益金额</li>
+          <li>
+            <el-button @click="handleAdd" round type="danger" icon="el-icon-circle-plus">申购</el-button>
+            <el-button @click="handleEdit" round type="success" icon="el-icon-remove">赎回</el-button>
+          </li>
+          <li></li>
+        </ul>
+      </el-col>
     </el-row>
+    <el-row>
+      <el-col :span="18">
+        <div id="historyDay" style="height: 250px;min-width: 400px"></div>
+      </el-col>
+      <el-col :span="5" :offset="1" style="background-color: #6a737d">
+        <ul>
+          <li>实时收益率</li>
+          <li>实时收益金额</li>
+          <li>买入</li>
+          <li>卖出</li>
+          <li>实时收益率</li>
+          <li>实时收益金额</li>
+          <li>买入</li>
+          <li>卖出</li>
+        </ul>
+      </el-col>
+    </el-row>
+
+    <!--新增表单-->
+    <el-dialog ref="addDialog" title="基金申购"
+               width="40%"
+               :visible.sync="addVisible"
+               :close-on-click-modal="false">
+      <el-form ref="addForm"
+               :model="addForm"
+               :rules="rules"
+               size="mini"
+      >
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="基金代码" prop="fundcode">
+              <el-input v-model="addForm.fundcode" maxlength="10" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-form-item label="申购金额" prop="pBalance">
+              <el-input v-model="addForm.pBalance"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="申请日期" prop="dRequest">
+              <el-date-picker
+                v-model="addForm.dRequest"
+                type="date"
+                size="small"
+                format="yyyy-MM-dd"
+                value-format="yyyyMMdd"
+                placeholder="选择日期">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="4">
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="addVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="addSubmitForm('addForm')">提 交</el-button>
+      </div>
+    </el-dialog>
+    <!--修改表单-->
+    <el-dialog ref="editDialog" title="基金赎回"
+               width="40%"
+               :visible.sync="editVisible"
+               :close-on-click-modal="false">
+      <el-form ref="editForm"
+               :model="editForm"
+               :rules="rules"
+               size="mini"
+      >
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="剩余份额" prop="curRedeem">
+              <el-input v-model="editForm.curRedeem" disabled></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-form-item label="基金代码" prop="fundcode">
+              <el-input v-model="editForm.fundcode" disabled></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="申请日期" prop="dRequest">
+              <el-input placeholder="请输入日期" v-model="editForm.dRequest"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-form-item label="赎回份额" prop="rFare">
+              <el-input v-model="editForm.rFare"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="editVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="editSubmitForm('editForm')">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
+
 </template>
 
 <script>
@@ -25,6 +140,34 @@
         name: "Finance",
         data () {
             return {
+                addVisible: false,
+                editVisible: false,
+                addForm: {
+                    fundcode: '',
+                    pBalance: '',
+                    dRequest: ''
+                },
+                editForm: {
+                    curRedeem: '',
+                    fundcode: '',
+                    rFare: '',
+                    dRequest: ''
+                },
+                rules: {
+                    fundcode: [
+                        {required: true, message: '请输入基金代码', trigger: 'blur'}
+                    ],
+                    pBalance: [
+                        {required: true, message: '请输入申购金额', trigger: 'blur'}
+                    ],
+                    dRequest: [
+                        {required: true, message: '请输入申请日期', trigger: 'blur'}
+                    ],
+                    rFare: [
+                        {required: true, message: '请输入赎回份额', trigger: 'blur'}
+                    ]
+                },
+                formLabelWidth: 150,
                 orgOptions: {},
                 funds: [{
                     value: '008086',
@@ -36,16 +179,126 @@
                     value: '003547',
                     label: '鹏华丰禄债券'
                 }],
-                fundcode: '008086',
-                historyValues:[]
+                fundcode: '',
+                historyValues:[],
+                baseValue:0,
+                curBaseValue:1,
+                profit:[],
+                curDate:[],
+                curData:[],
+                timer:'',
+                workDay:true
             }
         },
         methods: {
+            handleAdd() {
+                this.addVisible = true;
+                this.addForm.fundcode=this.fundcode;
+            },
+            handleEdit() {
+                this.editVisible = true;
+                this.editForm.fundcode = this.fundcode;
+            },
+            addSubmitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let _this = this;
+                        this.$axios.post("/netvalue/purchase",this.addForm)
+                            .then(function(response){
+                                _this.commons.kMessage("申购成功！", 'success');
+                            })
+                            .catch(function(error){
+                            });
+                        this.addVisible = false;
+                        return true;
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            editSubmitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let _this = this;
+                        this.$axios.post("/netvalue/redeem",this.editForm)
+                            .then(function(response){
+                                _this.commons.kMessage("赎回成功！", 'success');
+                            })
+                            .catch(function(error){
+                            });
+                        this.editVisible = false;
+                        return true;
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
+            timeTask() {
+                // 无值默认刷新一次
+                if (this.curDate.length<1) {
+                    this.getCurData();
+                } else {
+                    // 默认执行后为工作日才继续执行
+                    if(this.workDay) {
+                        let date = new Date();
+                        // 行情时间内才执行
+                        if (date.getHours() >= 9 && date.getHours() < 15) {
+                            this.getCurData();
+                        }
+                    }
+                }
+            },
+            getCurData(){
+              // 发送请求并判断是否为工作日
+                let _this=this;
+                let fundcode = this.fundcode;
+                this.$axios.get('/netvalue/current',{
+                    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+                    params:{
+                        fundcode:fundcode
+                    }
+                }).then(function(response){
+                    let data = response.data.data;
+                    if (!!data) {
+                        let time = data.gztime;
+                        let date = time.replace(/-/g, '').substring(0, 8);
+                        let rate = data.gszzl;
+                        let curNetValue = data.gsz;
+                        _this.curBaseValue=data.dwjz;
+                        if(_this.curDate.length<1){
+                            _this.curDate.push(data.jzrq);
+                            _this.curData.push(0);
+                        }
+                        _this.curDate.push(time);
+                        _this.curData.push(rate);
+                        // 工作日判断
+                        const date1 = new Date();
+                        let year = date1.getFullYear();
+                        let month = date1.getMonth() + 1 + '';
+                        month = month.length < 2 ? 0 + month : month;
+                        let day = date1.getDate() + '';
+                        day = day.length < 2 ? 0 + day : day;
+                        if (Number(year + month + day) !== date) {
+                            _this.workDay = false;
+                        }
+                        _this.curDay();
+                    }
+                }).catch(function(error){
+
+                })
+            },
             fundDict(){
                 let _this = this;
                 this.$axios.get("/fund/dict")
                     .then(function (response) {
                         _this.funds = response.data.data;
+                        _this.fundcode = _this.funds[0].value;
+                        // 图表数据查询，存在基金代码
+                        _this.selectOption(_this.fundcode);
+                        // 当日净值查询
+                        _this.timeTask();
                     }).catch(function (error) {
 
                 })
@@ -54,10 +307,14 @@
                 let _this = this;
                 this.$axios.get("/netvalue/search", {
                     params: {
-                        fundcode: this.fundcode
+                        fundcode: val
                     }
                 }).then(function (response) {
                     _this.historyValues = response.data.data;
+                    // 当日净值清空
+                    _this.curDate=[];
+                    _this.curData=[];
+                    _this.timeTask();
                     _this.history();
                 }).catch(function (erro) {
 
@@ -65,6 +322,7 @@
             },
             curDay() {
                 let curday = this.$echarts.init(document.getElementById('curDay'));
+                let _this = this;
                 let option = {
                     title: {
                         text: '当日净值估算图',
@@ -90,7 +348,7 @@
                     },
                     xAxis: {
                         type: 'category',
-                        data: ['9:30', '10:30', '11:30/13:00', '14:00', '15:00'],
+                        data: _this.curDate,
                         name: '时间',
                         boundaryGap: false,// 去除坐标轴留白
                         axisTick: {  //去掉坐标轴刻线
@@ -100,27 +358,39 @@
                     },
                     yAxis: {
                         type: 'value',
+                        scale: true,
+                        name:'收益率',
                         /*scale:true,*/
                         splitLine: {show: false},//去除网格线
                         /*boundaryGap: ['20%', '20%'],*/
-                        minInterval: 0.004,
-                        min: 1.231 * 0.99,
-                        max: 1.231 * 1.01,
+                        minInterval: 0.001,
+                        min: function (value) {
+                            return value.min - 1;
+                        },
+                        max: function (value) {
+                            return value.max + 1;
+                        },
+                        /*splitLine: {
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        },*/
+                        boundaryGap: [0, '100%'],
                         axisLabel: {
                             formatter: function (value, index) {
-                                return value.toFixed(4);
+                                return value.toFixed(2)+'%';
                             }
                         }
                     },
                     series: [{
-                        data: [1.231, 1.232, 1.226, 1.233, 1.235, 1.234, 1.300],
+                        data: _this.curData,
                         type: 'line',
                         showSymbol: false,
                         hoverAnimation: false,
-                        smooth: true,//平滑
+                        smooth: false,//平滑
                         symbol: 'none',
 
-                        markLine: { //基准线
+                        /*markLine: { //基准线
                             symbol: ['none', 'none'],//去掉箭头
                             silent: true,
                             precision: 4,
@@ -132,12 +402,12 @@
                             data: [{
                                 yAxis: 1.2312
                             }]
-                        }
+                        }*/
                     }]
                 };
 
 
-                curday.setOption(option);
+                curday.setOption(option,true);
             },
             history(){
                 let date = [];
@@ -155,13 +425,14 @@
                         data[i]=Number(0).toFixed(4);
                     }
                 }
-
+                this.profit = data;
                 let history = this.$echarts.init(document.getElementById('historyDay'));
+                let _this = this;
                 let option = {
                     tooltip: {
                         trigger: 'axis',
                         position: function (pt) {
-                            return [pt[0], '10%'];
+                            return [pt[0]-30, '10%'];
                         },
                         axisPointer: {
                             type: 'cross'
@@ -170,7 +441,8 @@
                             let baseParam = params[0];
                             let netParam = params[1];
                             let str = '时间：' + baseParam.axisValue +
-                                '<br>' + '收益率：' + baseParam.data +'%'+ '<br>' + '单位净值：' + netParam.data ;
+                                '<br>' + '发行收益率：' + Number(baseParam.data).toFixed(2) +'%'+ '<br>' + '单位净值：' + netParam.data
+                                + '<br>' + '相对收益率：' + Number((baseParam.data-_this.baseValue)).toFixed(2)+'%' ;
                             return str;
                         }
                     },
@@ -179,12 +451,16 @@
                         text: '历史净值图',
                     },
                     toolbox: {
+                        show: true,
                         feature: {
-                            dataZoom: {
-                                yAxisIndex: 'none'
-                            },
-                            restore: {},
-                            saveAsImage: {}
+                            myTool1: {
+                                show: true,
+                                title: '更新历史净值',
+                                icon: 'path://M512 919.552c-224.768 0-407.552-182.784-407.552-407.552 0-8.704 0.512-17.408 1.024-26.112l71.68 4.608c-0.512 7.168-0.512 14.336-0.512 21.504 0 185.344 150.528 335.872 335.872 335.872 86.528 0 168.448-32.768 230.912-92.16l49.152 52.224C716.288 880.128 616.96 919.552 512 919.552zM919.552 512h-71.68c0-11.776-0.512-23.552-2.048-35.328-17.92-171.52-161.28-300.544-334.336-300.544-67.584 0-132.096 19.968-187.904 57.344L284.16 174.08c67.072-45.568 145.92-69.632 227.84-69.632 209.408 0 384 156.672 405.504 365.056 1.536 13.824 2.048 28.16 2.048 42.496z',
+                                onclick: function (){
+                                    _this.updateHistory();
+                                }
+                            }
                         }
                     },
                     axisPointer: {
@@ -201,8 +477,18 @@
                     yAxis: {
                         type: 'value',
                         scale: true,
-                        splitNumber:6,
                         minInterval:0.01,
+                        min: function (value) {
+                            return value.min - 1;
+                        },
+                        max: function (value) {
+                            return value.max + 1;
+                        },
+                        /*splitLine: {
+                            lineStyle: {
+                                type: 'dashed'
+                            }
+                        },*/
                         boundaryGap: [0, '100%'],
                         axisLabel: {
                             formatter: function (value, index) {
@@ -233,9 +519,9 @@
                             type: 'line',
                             smooth: false,
                             symbol: 'none',
-                            sampling: 'average',
+                           /* sampling: 'average',*/
                             itemStyle: {
-                                color: 'rgb(255, 70, 131)'
+                                color: 'rgb(131,177,255)'
                             },
                             data: data
                         },
@@ -252,17 +538,48 @@
                         }
                     ]
                 };
-                history.setOption(option);
+                history.setOption(option,true);
+                history.on("dataZoom", function(param){
+                    let start = param.start;
+                    if(start==undefined){
+                        start=param.batch[0].start;
+                    }
+                    let position = Math.round(start*(_this.profit.length/100.00));
+                    _this.baseValue=_this.profit[position];
+                });
+            },
+            updateHistory(){
+                let data='fundcode='+this.fundcode;
+                let _this =this;
+                this.$axios.post('/netvalue/update',data,{
+                    headers:{
+                        'Content-Type':'application/x-www-form-urlencoded'
+                    }
+                }).then(function(response){
+                    _this.history();
+                    _this.commons.kMessageAtTime("更新历史净值成功！", 'success',500);
+                }).catch(function(error){
+
+                })
             }
         },
         mounted() {
-            this.fundDict();
             this.curDay();
             this.history();
+        },
+        created() {
+            this.fundDict();
+            this.timer = setInterval(this.timeTask, 60000);
+        },
+        beforeDestroy:function() {
+            //关闭窗口后清除定时器
+            clearInterval(this.timer);
         }
     }
 </script>
 
 <style scoped>
-
+  li{
+    list-style-type:none
+  }
 </style>

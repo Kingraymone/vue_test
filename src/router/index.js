@@ -75,6 +75,11 @@ const router = new Router({
           meta: { title: '用户管理',keepAlive:true }
         },
         {
+          path: 'navigation',
+          component: () => import('@/views/home/Navigation.vue'),
+          meta: { title: '页面导航',keepAlive:true }
+        },
+        {
           path: 'article/publish/:id',
           component: () => import('@/views/home/article/Publish.vue'),
           meta: { title: '发表文章' }
@@ -98,6 +103,11 @@ const router = new Router({
           path: 'finance/fund',
           component: () => import('@/views/home/finance/Fund.vue'),
           meta: { title: '所有基金',keepAlive:true }
+        },
+        {
+          path: 'finance/fare',
+          component: () => import('@/views/home/finance/FareRatio.vue'),
+          meta: { title: '费率设置',keepAlive:true }
         }
 
         ]
