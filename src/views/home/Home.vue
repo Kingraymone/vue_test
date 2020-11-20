@@ -9,7 +9,8 @@
     <p>今日访问数量</p>
     <p>访客数量走势图</p>
     <p>记事工具</p>
-
+    <el-calendar style="max-width: 600px" v-model="value">
+    </el-calendar>
 
   </div>
 
