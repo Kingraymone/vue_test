@@ -80,7 +80,8 @@
           </li>
           <li>
             <div class="myFrame2">
-              <el-button @click="handleEdit" round size="small" type="info" icon="el-icon-info">详情</el-button>
+              <el-button @click="dialogTableVisible=true" round size="small" type="info" icon="el-icon-info">详情
+              </el-button>
             </div>
           </li>
         </ul>
@@ -178,6 +179,16 @@
         <el-button size="small" type="primary" @click="editSubmitForm('editForm')">提 交</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="历史收益详情" :visible.sync="dialogTableVisible">
+      <el-table :data="gridData">
+        <el-table-column property="fundcode" label="基金代码" width="150"></el-table-column>
+        <el-table-column property="drequest" label="申请日期" width="150" sortable="true" :formatter="this.commons.dateFormat"></el-table-column>
+        <el-table-column property="ddate" label="确认日期" width="150" sortable="true" :formatter="this.commons.dateFormat"></el-table-column>
+        <el-table-column property="balances" label="赎回金额" width="150"></el-table-column>
+        <el-table-column property="original" label="原始金额"></el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 
 </template>
@@ -187,8 +198,24 @@
 
     export default {
         name: "Finance",
+        watch: {
+            dialogTableVisible() {
+                if (this.dialogTableVisible) {
+                    let _this = this;
+                    this.$axios.get('/netvalue/detail', {
+                        params: {
+                            fundcode: this.fundcode
+                        }}).then(function (response) {
+                        _this.gridData = response.data.data;
+                    }).catch(function (error) {
+
+                    })
+                }
+            }
+        },
         data() {
             return {
+                dialogTableVisible: false,
                 addVisible: false,
                 editVisible: false,
                 addForm: {
@@ -220,6 +247,7 @@
                 },
                 formLabelWidth: 150,
                 orgOptions: {},
+                gridData: [],
                 funds: [{
                     value: '008086',
                     label: '华夏中证5G通信主题ETF联接A'
@@ -257,6 +285,9 @@
             }
         },
         methods: {
+            /*handleDetail(){
+
+            },*/
             handleAdd() {
                 this.addVisible = true;
                 this.addForm.fundcode = this.fundcode;
