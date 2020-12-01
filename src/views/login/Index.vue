@@ -70,7 +70,7 @@
                         // 存在token直接成功
                         this.$axios.post('/user/verify', {
                             username: this.param.username,
-                            password: this.param.password
+                            password: this.$getRsaCode(this.param.password)
                         })
                             .then(function (response) {
                                 _this.commons.kMessage('登录成功!', 'success');

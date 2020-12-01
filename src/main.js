@@ -13,13 +13,24 @@ import 'font-awesome/css/font-awesome.css'
 import commons from './utils/common'
 // 图表
 import echarts from 'echarts'
+import JSEncrypt from 'jsencrypt';
+
 
 Vue.prototype.$echarts=echarts;
-
+//阻止启动生产消息
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.prototype.$axios = axios;
 Vue.prototype.commons=commons;
+// 加密相关
+Vue.prototype.Base64=require('js-base64').Base64;
+Vue.prototype.$getRsaCode = function(str){ // 注册方法
+  let pubKey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWFo+/ojb7DVLim01VELRnQ503fV+cUFC4uzZ04uaDjZedNUWu9OEG8EGsSHDef3V+Ciap0FgS4c5LKo+KC8xzGcQ8at/fdriRgGkYP+qqAEFmQu3o1SGqOTOpKiIjU3Ho9RRpDIQRuKjshD6ICzjMbT1/eSiz2j+yj3eYOUdxnwIDAQAB';// ES6 模板字符串 引用 rsa 公钥
+  let encryptStr = new JSEncrypt();
+  encryptStr.setPublicKey(pubKey); // 设置 加密公钥
+  let  data = encryptStr.encrypt(str.toString());  // 进行加密
+  return data;
+};
 
 new Vue({
   el: '#app',

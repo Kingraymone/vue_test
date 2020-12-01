@@ -3,7 +3,7 @@
     <!--首部-->
     <div class="crumbs">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item><i class="el-icon-s-custom"></i> 用户管理</el-breadcrumb-item>
+        <el-breadcrumb-item><i class="el-icon-s-custom"></i> 菜单列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="myContainer">
@@ -12,36 +12,23 @@
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <div>
             <el-form :inline="true">
-              <el-form-item label="用户名">
+              <el-form-item label="菜单名">
                 <el-input
                   placeholder="请输入内容"
-                  v-model="searchTab.username"
+                  v-model="searchTab.title"
                   clearable
                   size="small"
                   prefix-icon="el-icon-search">
                 </el-input>
               </el-form-item>
-              <el-form-item label="创建日期">
-                <el-date-picker
-                  v-model="searchTab.createTime"
-                  type="date"
-                  size="small"
-                  format="yyyy-MM-dd"
-                  value-format="yyyyMMdd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item label="用户状态">
-                <el-select
-                  v-model="searchTab.status"
-                  multiple
-                  collapse-tags
+              <el-form-item label="菜单等级">
+                <el-input
+                  placeholder="0|1|2"
+                  v-model="searchTab.layer"
                   clearable
                   size="small"
-                  placeholder="请选择">
-                  <el-option label="正常" value="0"></el-option>
-                  <el-option label="冻结" value="1"></el-option>
-                </el-select>
+                  prefix-icon="el-icon-search">
+                </el-input>
               </el-form-item>
               <el-form-item>
                 <el-button size="small" type="primary" @click="onQuery">查询</el-button>
@@ -64,7 +51,6 @@
           <el-tooltip class="item" content="删除">
             <el-button type="danger" icon="el-icon-delete" @click="handleDelete"></el-button>
           </el-tooltip>
-          <el-button type="primary" @click="iconUpload">头像上传<i class="el-icon-upload el-icon--right"></i></el-button>
         </el-button-group>
       </el-row>
       <!--表格-->
@@ -125,35 +111,53 @@
       >
         <el-row>
           <el-col :span="10">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="addForm.username" maxlength="10"></el-input>
+            <el-form-item label="父菜单" prop="parentId">
+              <el-input v-model="addForm.parentId" maxlength="50"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="addForm.nickname"></el-input>
+            <el-form-item label="菜单名" prop="title">
+              <el-input v-model="addForm.title"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="密码" prop="password">
-              <el-input placeholder="请输入密码" v-model="addForm.password" show-password></el-input>
+            <el-form-item label="菜单图标" prop="icon">
+              <el-input v-model="addForm.icon"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="座右铭" prop="motto">
-              <el-input v-model="addForm.motto"></el-input>
+            <el-form-item label="菜单路径" prop="url">
+              <el-input v-model="addForm.url"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="邮箱" prop="mail">
-              <el-input v-model="addForm.mail"></el-input>
+            <el-form-item label="排序" prop="orderNum">
+              <el-input placeholder="请输入排序" v-model="addForm.orderNum"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
+            <el-form-item label="菜单等级" prop="layer">
+              <el-select
+                v-model="addForm.layer"
+                clearable
+                placeholder="请选择">
+                <el-option label="一级菜单" value="0"></el-option>
+                <el-option label="二级菜单" value="1"></el-option>
+                <el-option label="三级菜单" value="2"></el-option>
+                <el-option label="四级菜单" value="3"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="资源名" prop="resourceCode">
+              <el-input v-model="addForm.resourceCode"></el-input>
+            </el-form-item>
           </el-col>
         </el-row>
       </el-form>
@@ -174,43 +178,51 @@
       >
         <el-row>
           <el-col :span="10">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="editForm.username" maxlength="10" disabled></el-input>
+            <el-form-item label="父菜单" prop="parentId">
+              <el-input v-model="editForm.parentId" maxlength="50"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="editForm.nickname"></el-input>
+            <el-form-item label="菜单名" prop="title">
+              <el-input v-model="editForm.title"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="密码" prop="password">
-              <el-input placeholder="请输入密码" v-model="editForm.password" show-password></el-input>
+            <el-form-item label="菜单图标" prop="icon">
+              <el-input v-model="editForm.icon"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="座右铭" prop="motto">
-              <el-input v-model="editForm.motto"></el-input>
+            <el-form-item label="菜单路径" prop="url">
+              <el-input v-model="editForm.url"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="邮箱" prop="mail">
-              <el-input v-model="editForm.mail"></el-input>
+            <el-form-item label="排序" prop="orderNum">
+              <el-input placeholder="请输入排序" v-model="editForm.orderNum"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="状态" prop="status">
+            <el-form-item label="菜单等级" prop="layer">
               <el-select
-                v-model="editForm.status"
+                v-model="editForm.layer"
                 clearable
                 placeholder="请选择">
-                <el-option label="正常" value="0"></el-option>
-                <el-option label="冻结" value="1"></el-option>
+                <el-option label="一级菜单" value="0"></el-option>
+                <el-option label="二级菜单" value="1"></el-option>
+                <el-option label="三级菜单" value="2"></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="资源名" prop="resourceCode">
+              <el-input v-model="editForm.resourceCode"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -221,77 +233,57 @@
       </div>
     </el-dialog>
 
-    <el-dialog ref="imgDialog" title="头像上传"
-               width="40%"
-               :visible.sync="imgVisible"
-               :close-on-click-modal="true">
-      <upload :username="username" @closeUpload="imgVisible=false"></upload>
-    </el-dialog>
   </div>
 
 </template>
 
 <script>
-    import upload from '../../components/main/UpLoadImg'
     export default {
-        name: "user",
-        components:{
-            upload
-        },
+        name: "Menu",
         data() {
-            const item = {
-                createTime: '2016-05-02',
-                username: '王小虎',
-                nickname: '小虎',
-                motto: '上海市普陀区金沙江路 1518 弄',
-                mail: '5232323@qq.com',
-                status: '1'
-            };
-            const item2 = {
-                createTime: '2016-05-03',
-                username: '范德萨',
-                nickname: '分',
-                motto: '上海市普陀区金沙江路 1518 弄',
-                mail: '523232223@qq.com',
-                status: '0'
-            };
             return {
-                username:'',
                 addVisible: false,
                 editVisible: false,
-                imgVisible:false,
                 addForm: {
-                    username: '',
-                    password: '',
-                    nickname: '',
-                    motto: '',
-                    mail: ''
+                    parentId: '',
+                    icon: '',
+                    url: '',
+                    title: '',
+                    orderNum: '',
+                    resourceCode: '',
+                    layer: ''
                 },
                 editForm: {
-                    uniqueId: '',
-                    username: '',
-                    password: '',
-                    nickname: '',
-                    motto: '',
-                    mail: '',
-                    status: ''
+                    id: '',
+                    parentId: '',
+                    icon: '',
+                    url: '',
+                    title: '',
+                    orderNum: '',
+                    resourceCode: '',
+                    layer: ''
                 },
                 rules: {
-                    username: [
-                        {required: true, message: '请输入用户名', trigger: 'blur'}
+                    parentId: [
+                        {required: true, message: '请输入父菜单', trigger: 'blur'}
                     ],
-                    password: [
-                        {required: true, message: '请输入密码', trigger: 'blur'}
+                    title: [
+                        {required: true, message: '请输入菜单名', trigger: 'blur'}
                     ],
-                    nickname: [
-                        {required: true, message: '请输入昵称', trigger: 'blur'}
+                    resourceCode: [
+                        {required: true, message: '请输入资源代码', trigger: 'blur'}
+                    ],
+                    layer: [
+                        {required: true, message: '请选择菜单等级', trigger: 'blur'}
+                    ],
+                    url: [
+                        {required: true, message: '请输入菜单路径', trigger: 'blur'}
                     ]
                 },
                 formLabelWidth: 150,
                 searchTab: {
-                    username: '',
-                    createTime: '',
-                    status: []
+                    title: '',
+                    layer: ''
                 },
                 tableData: [],
                 tcolumn: [
@@ -301,41 +293,51 @@
                         type: 'selection',
                         prop: ''
                     }, {
-                        label: '用户名',
-                        width: '120',
+                        label: '菜单ID',
+                        width: '100',
                         type: '',
-                        prop: 'username',
+                        prop: 'id',
                         sort: true
                     }, {
-                        label: '昵称',
+                        label: '父菜单',
                         width: '120',
                         type: '',
-                        prop: 'nickname',
+                        prop: 'parentId',
                         sort: true
                     }, {
-                        label: '状态',
+                        label: '菜单名',
+                        width: '120',
+                        type: '',
+                        prop: 'title',
+                        sort: true
+                    }, {
+                        label: '菜单图标',
+                        width: '150',
+                        type: '',
+                        prop: 'icon',
+                        sort: true
+                    }, {
+                        label: '菜单路径',
+                        width: '150',
+                        type: '',
+                        prop: 'url',
+                        sort: true
+                    }, {
+                        label: '资源代码',
+                        width: '150',
+                        type: '',
+                        prop: 'resourceCode',
+                        sort: true
+                    }, {
+                        label: '菜单等级',
                         width: '120',
                         type: '',
                         sort: true,
-                        prop: 'status'
+                        prop: 'layer'
                     }, {
-                        label: '座右铭',
-                        width: '220',
+                        label: '排序',
                         type: '',
-                        prop: 'motto'
-                    }, {
-                        label: '邮箱',
-                        width: '200',
-                        sort: true,
-                        type: '',
-                        prop: 'mail'
-                    }, {
-                        label: '创建日期',
-                        width: '',
-                        type: '',
-                        sort: true,
-                        prop: 'createTime',
-                        format: this.commons.dateFormat
+                        prop: 'orderNum'
                     }
                 ],
                 rowSelections: [],
@@ -356,7 +358,7 @@
                     "data": data
                 };
                 let _this = this;
-                _this.$axios.post('/user/search', searchParam)
+                _this.$axios.post('/menu/search', searchParam)
                     .then(function (response) {
                         _this.tableData = response.data.data;
                         _this.total = response.data.count
@@ -381,10 +383,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.addForm.password=this.$getRsaCode(this.addForm.password);
-                        this.$axios.post("/user/add",this.addForm)
+                        this.$axios.post("/menu/add",this.addForm)
                             .then(function(response){
-                                _this.commons.kMessage("新增用户成功！", 'success');
+                                _this.commons.kMessage("新增菜单成功！", 'success');
                                 _this.selectData();
                             })
                             .catch(function(error){
@@ -410,10 +411,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.editForm.password=this.$getRsaCode(this.editForm.password);
-                        this.$axios.post("/user/update",this.editForm)
+                        this.$axios.post("/menu/update",this.editForm)
                             .then(function(response){
-                                _this.commons.kMessage("修改用户成功！", 'success');
+                                _this.commons.kMessage("修改菜单成功！", 'success');
                                 _this.selectData();
                             })
                             .catch(function(error){
@@ -431,14 +431,14 @@
                 if (this.rowSelections.length < 1) {
                     this.commons.kMessage("请选择至少一条数据！", 'info');
                 } else {
-                  let primaryKey = [];
-                  this.rowSelections.forEach(function(item){
-                      primaryKey.push(item.uniqueId);
-                  });
+                    let primaryKey = [];
+                    this.rowSelections.forEach(function(item){
+                        primaryKey.push(item.id);
+                    });
                     let _this = this;
-                    this.$axios.post("/user/delete", { primaryKey})
+                    this.$axios.post("/menu/delete", primaryKey)
                         .then(function (response) {
-                            _this.commons.kMessage("删除用户成功！", 'success');
+                            _this.commons.kMessage("删除菜单成功！", 'success');
                             _this.currentPage = 1;
                             _this.selectData();
                         })
@@ -451,15 +451,14 @@
                 if (this.rowSelections.length !== 1) {
                     this.commons.kMessage("请选择一条数据！", 'info');
                 } else {
-                  this.imgVisible=true;
-                  this.username=this.rowSelections[0].username;
+                    this.imgVisible=true;
+                    this.title=this.rowSelections[0].title;
                 }
             },
             resetForm() {
                 this.searchTab = {
-                    username: '',
-                    createTime: '',
-                    status: []
+                    title: '',
+                    layer: ''
                 };
             },
             onQuery() {

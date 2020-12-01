@@ -206,6 +206,7 @@
     margin: 100px auto 0;
     box-sizing: border-box;
     border-radius: 50%;
+    border: 5px rgba(255, 255, 255, 0.69) solid;
     overflow: hidden;
     box-shadow: 0 5px 15px 0px rgba(0, 0, 0, 0.6);
     transform: translatey(0px);

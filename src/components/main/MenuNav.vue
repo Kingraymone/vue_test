@@ -66,6 +66,25 @@
                         title: '用户管理'
                     },
                     {
+                        icon: 'el-icon-s-tools',
+                        index: 'authority',
+                        title: '权限管理',
+                        subs: [
+                            {
+                                index: '/sys/home/authority/role',
+                                title: '角色列表'
+                            },
+                            {
+                                index: '/sys/home/authority/menu',
+                                title: '菜单列表'
+                            },
+                            {
+                                index: '/sys/home/authority/resource',
+                                title: '资源列表'
+                            }
+                        ]
+                    },
+                    {
                         icon: 'el-icon-s-order',
                         index: 'article',
                         title: '文章管理',

@@ -108,7 +108,23 @@ const router = new Router({
           path: 'finance/fare',
           component: () => import('@/views/home/finance/FareRatio.vue'),
           meta: { title: '费率设置',keepAlive:true }
+        },
+        {
+          path: 'authority/role',
+          component: () => import('@/views/home/authority/Role.vue'),
+          meta: { title: '角色列表',keepAlive:true }
+        },
+        {
+          path: 'authority/menu',
+          component: () => import('@/views/home/authority/Menu.vue'),
+          meta: { title: '菜单列表',keepAlive:true }
+        },
+        {
+          path: 'authority/resource',
+          component: () => import('@/views/home/authority/Resource.vue'),
+          meta: { title: '资源列表',keepAlive:true }
         }
+
 
         ]
     },

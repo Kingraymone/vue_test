@@ -54,7 +54,12 @@
               <el-button @click="handleEdit" round size="small" type="success" icon="el-icon-remove">赎回</el-button>
             </div>
           </li>
-          <li></li>
+          <li>
+            <div class="myFrame2">
+              <el-button @click="dialogTableVisible2=true" round size="small" type="info" icon="el-icon-info">详情
+              </el-button>
+            </div>
+          </li>
         </ul>
       </el-col>
     </el-row>
@@ -183,13 +188,30 @@
     <el-dialog title="历史收益详情" :visible.sync="dialogTableVisible">
       <el-table :data="gridData">
         <el-table-column property="fundcode" label="基金代码" width="150"></el-table-column>
-        <el-table-column property="drequest" label="申请日期" width="150" sortable="true" :formatter="this.commons.dateFormat"></el-table-column>
-        <el-table-column property="ddate" label="确认日期" width="150" sortable="true" :formatter="this.commons.dateFormat"></el-table-column>
+        <el-table-column property="drequest" label="申请日期" width="150" sortable="true"
+                         :formatter="this.commons.dateFormat"></el-table-column>
+        <el-table-column property="ddate" label="确认日期" width="150" sortable="true"
+                         :formatter="this.commons.dateFormat"></el-table-column>
         <el-table-column property="balances" label="赎回金额" width="150"></el-table-column>
         <el-table-column property="original" label="原始金额"></el-table-column>
       </el-table>
     </el-dialog>
+    <el-dialog title="申购详情" :visible.sync="dialogTableVisible2">
+      <el-table :data="gridData2">
+        <el-table-column property="fundcode" label="基金代码" width="150"></el-table-column>
+        <el-table-column property="drequest" label="申请日期" width="150" sortable="true"
+                         :formatter="this.commons.dateFormat"></el-table-column>
+        <el-table-column property="ddate" label="确认日期" width="150" sortable="true"
+                         :formatter="this.commons.dateFormat"></el-table-column>
+        <el-table-column property="holdday" label="持有天数" width="150"></el-table-column>
+        <el-table-column property="original" label="申购金额" width="150"></el-table-column>
+        <el-table-column property="purchase" label="申购费" width="150"></el-table-column>
+        <el-table-column property="shares" label="确认份额" width="150"></el-table-column>
+        <el-table-column property="rfare" label="剩余份额"></el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
+
 
 </template>
 
@@ -204,9 +226,32 @@
                     let _this = this;
                     this.$axios.get('/netvalue/detail', {
                         params: {
-                            fundcode: this.fundcode
-                        }}).then(function (response) {
+                            fundcode: this.fundcode,
+                            type: '1'
+                        }
+                    }).then(function (response) {
                         _this.gridData = response.data.data;
+                    }).catch(function (error) {
+
+                    })
+                }
+            },
+            dialogTableVisible2() {
+                if (this.dialogTableVisible2) {
+                    let _this = this;
+                    this.$axios.get('/netvalue/detail', {
+                        params: {
+                            fundcode: this.fundcode,
+                            type: '0'
+                        }
+                    }).then(function (response) {
+                        _this.gridData2 = response.data.data;
+                        let nextDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+                        for (let i = 0; i < _this.gridData2.length; i++) {
+                            let ddate = _this.gridData2[i].ddate+"";
+                            let purDate = new Date(ddate.substring(0, 4), ddate.substring(4, 6)-1, ddate.substring(6, 8));
+                            _this.gridData2[i].holdday = Math.floor((nextDate - purDate) / (24 * 3600 * 1000));
+                        }
                     }).catch(function (error) {
 
                     })
@@ -214,7 +259,19 @@
             }
         },
         data() {
+            let _this = this;
+            let validateShare = (rule, value, callback) => {
+                if (!Number(value)) {
+                    callback(new Error('请输入数字！'));
+                }
+                if (Number(value) <= Number(_this.holdShare)) {
+                    callback();
+                } else {
+                    callback(new Error('赎回份额必须小于持有份额！'));
+                }
+            };
             return {
+                dialogTableVisible2: false,
                 dialogTableVisible: false,
                 addVisible: false,
                 editVisible: false,
@@ -242,12 +299,14 @@
                         {required: true, message: '请输入申请日期', trigger: 'blur'}
                     ],
                     rfare: [
-                        {required: true, message: '请输入赎回份额', trigger: 'blur'}
+                        {required: true, message: '请输入赎回份额', trigger: 'blur'},
+                        {validator: validateShare, trigger: 'change'}
                     ]
                 },
                 formLabelWidth: 150,
                 orgOptions: {},
                 gridData: [],
+                gridData2: [],
                 funds: [{
                     value: '008086',
                     label: '华夏中证5G通信主题ETF联接A'
@@ -370,7 +429,7 @@
                         if (_this.curDate.length < 1) {
                             _this.curDate.push(data.jzrq);
                             _this.curData.push(0);
-                            _this.curNetValue.push(data.gsz);
+                            _this.curNetValue.push(data.dwjz);
                         }
                         _this.curDate.push(time);
                         _this.curData.push(rate);
@@ -414,6 +473,7 @@
                 }).then(function (response) {
                     let detail = response.data.data;
                     _this.holdShare = detail.holdShare;
+                    _this.editForm.curredeem = detail.holdShare;
                     _this.holdNetValue = detail.holdNetValue;
                     _this.holdBalance = detail.holdBalance;
                     _this.purchaseFare = detail.purchaseFare;

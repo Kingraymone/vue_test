@@ -3,7 +3,7 @@
     <!--首部-->
     <div class="crumbs">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item><i class="el-icon-s-custom"></i> 用户管理</el-breadcrumb-item>
+        <el-breadcrumb-item><i class="el-icon-s-custom"></i> 角色列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="myContainer">
@@ -12,26 +12,16 @@
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <div>
             <el-form :inline="true">
-              <el-form-item label="用户名">
+              <el-form-item label="角色代码">
                 <el-input
                   placeholder="请输入内容"
-                  v-model="searchTab.username"
+                  v-model="searchTab.roleCode"
                   clearable
                   size="small"
                   prefix-icon="el-icon-search">
                 </el-input>
               </el-form-item>
-              <el-form-item label="创建日期">
-                <el-date-picker
-                  v-model="searchTab.createTime"
-                  type="date"
-                  size="small"
-                  format="yyyy-MM-dd"
-                  value-format="yyyyMMdd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item label="用户状态">
+              <el-form-item label="角色状态">
                 <el-select
                   v-model="searchTab.status"
                   multiple
@@ -64,11 +54,10 @@
           <el-tooltip class="item" content="删除">
             <el-button type="danger" icon="el-icon-delete" @click="handleDelete"></el-button>
           </el-tooltip>
-          <el-button type="primary" @click="iconUpload">头像上传<i class="el-icon-upload el-icon--right"></i></el-button>
         </el-button-group>
       </el-row>
       <!--表格-->
-      <el-row >
+      <el-row>
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-table
             ref="multipleTable"
@@ -92,6 +81,17 @@
                 :show-overflow-tooltip='true'
               ></el-table-column>
             </template>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button size="small"
+                           type="primary"
+                           icon="el-icon-setting"
+                           circle
+                           @click="handleAuthority(scope.$index, scope.row)">
+                  权限管理
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
       </el-row>
@@ -125,35 +125,32 @@
       >
         <el-row>
           <el-col :span="10">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="addForm.username" maxlength="10"></el-input>
+            <el-form-item label="角色代码" prop="roleCode">
+              <el-input v-model="addForm.roleCode" maxlength="50"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="addForm.nickname"></el-input>
+            <el-form-item label="描述" prop="statement">
+              <el-input v-model="addForm.statement"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="密码" prop="password">
-              <el-input placeholder="请输入密码" v-model="addForm.password" show-password></el-input>
+            <el-form-item label="角色名" prop="rolename">
+              <el-input placeholder="请输入角色名" v-model="addForm.rolename"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="座右铭" prop="motto">
-              <el-input v-model="addForm.motto"></el-input>
+            <el-form-item label="状态" prop="status">
+              <el-select
+                v-model="addForm.status"
+                clearable
+                placeholder="请选择">
+                <el-option label="正常" value="0"></el-option>
+                <el-option label="冻结" value="1"></el-option>
+              </el-select>
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="邮箱" prop="mail">
-              <el-input v-model="addForm.mail"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10" :offset="4">
           </el-col>
         </el-row>
       </el-form>
@@ -174,32 +171,20 @@
       >
         <el-row>
           <el-col :span="10">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="editForm.username" maxlength="10" disabled></el-input>
+            <el-form-item label="角色代码" prop="roleCode">
+              <el-input v-model="editForm.roleCode" maxlength="50" disabled></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="editForm.nickname"></el-input>
+            <el-form-item label="描述" prop="statement">
+              <el-input v-model="editForm.statement"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="密码" prop="password">
-              <el-input placeholder="请输入密码" v-model="editForm.password" show-password></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10" :offset="4">
-            <el-form-item label="座右铭" prop="motto">
-              <el-input v-model="editForm.motto"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="邮箱" prop="mail">
-              <el-input v-model="editForm.mail"></el-input>
+            <el-form-item label="角色名" prop="rolename">
+              <el-input placeholder="请输入角色名" v-model="editForm.rolename"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
@@ -220,77 +205,98 @@
         <el-button size="small" type="primary" @click="editSubmitForm('editForm')">提 交</el-button>
       </div>
     </el-dialog>
+    <!--权限修改-->
+    <el-dialog ref="editDialog" title="权限修改"
+               width="60%"
+               :visible.sync="handleVisible"
+               :close-on-click-modal="false"
+               @close="closeDialog">
+      <el-cascader-panel v-loading="loading" @change="authorityChange" v-model="authority" :options="options"
+                         :props="{ multiple: true }" filterable>
 
-    <el-dialog ref="imgDialog" title="头像上传"
-               width="40%"
-               :visible.sync="imgVisible"
-               :close-on-click-modal="true">
-      <upload :username="username" @closeUpload="imgVisible=false"></upload>
+      </el-cascader-panel>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="handleVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="editAuthority(authority)">提 交</el-button>
+      </div>
     </el-dialog>
+
   </div>
 
 </template>
 
 <script>
-    import upload from '../../components/main/UpLoadImg'
     export default {
-        name: "user",
-        components:{
-            upload
-        },
+        name: "Role",
         data() {
-            const item = {
-                createTime: '2016-05-02',
-                username: '王小虎',
-                nickname: '小虎',
-                motto: '上海市普陀区金沙江路 1518 弄',
-                mail: '5232323@qq.com',
-                status: '1'
-            };
-            const item2 = {
-                createTime: '2016-05-03',
-                username: '范德萨',
-                nickname: '分',
-                motto: '上海市普陀区金沙江路 1518 弄',
-                mail: '523232223@qq.com',
-                status: '0'
-            };
             return {
-                username:'',
+                curRole: '',
+                loading: false,
+                authority: [],
+                options: [{
+                    value: 'sys_home:view',
+                    label: '系统首页'
+                }, {
+                    value: 'sys_user:view',
+                    label: '用户管理',
+                    children: [{
+                        value: 'sys_user:edit',
+                        label: '编辑用户信息'
+                    }, {
+                        value: 'sys_user:view',
+                        label: '查看用户信息'
+                    }]
+                }, {
+                    value: 'sys_authority:view',
+                    label: '权限管理',
+                    children: [{
+                        value: 'sys_authority_role:view',
+                        label: '角色列表',
+                        children: [{
+                            value: 'sys_authority_role:view',
+                            label: '查看角色信息'
+                        }, {
+                            value: 'sys_authority_role:edit',
+                            label: '修改角色信息'
+                        }]
+                    }, {
+                        value: 'sys_user:view',
+                        label: '资源列表'
+                    }]
+                }],
+                handleVisible: false,
                 addVisible: false,
                 editVisible: false,
-                imgVisible:false,
                 addForm: {
-                    username: '',
-                    password: '',
-                    nickname: '',
-                    motto: '',
-                    mail: ''
+                    roleCode: '',
+                    rolename: '',
+                    statement: '',
+                    status: ''
                 },
                 editForm: {
-                    uniqueId: '',
-                    username: '',
-                    password: '',
-                    nickname: '',
-                    motto: '',
-                    mail: '',
+                    roleId: '',
+                    roleCode: '',
+                    rolename: '',
+                    statement: '',
                     status: ''
                 },
                 rules: {
-                    username: [
-                        {required: true, message: '请输入用户名', trigger: 'blur'}
+                    roleCode: [
+                        {required: true, message: '请输入角色代码', trigger: 'blur'}
                     ],
-                    password: [
-                        {required: true, message: '请输入密码', trigger: 'blur'}
+                    rolename: [
+                        {required: true, message: '请输入角色名', trigger: 'blur'}
                     ],
-                    nickname: [
-                        {required: true, message: '请输入昵称', trigger: 'blur'}
+                    statement: [
+                        {required: true, message: '请输入描述', trigger: 'blur'}
+                    ],
+                    status: [
+                        {required: true, message: '请选择状态', trigger: 'blur'}
                     ]
                 },
                 formLabelWidth: 150,
                 searchTab: {
-                    username: '',
-                    createTime: '',
+                    roleCode: '',
                     status: []
                 },
                 tableData: [],
@@ -301,16 +307,16 @@
                         type: 'selection',
                         prop: ''
                     }, {
-                        label: '用户名',
+                        label: '角色代码',
                         width: '120',
                         type: '',
-                        prop: 'username',
+                        prop: 'roleCode',
                         sort: true
                     }, {
-                        label: '昵称',
+                        label: '描述',
                         width: '120',
                         type: '',
-                        prop: 'nickname',
+                        prop: 'statement',
                         sort: true
                     }, {
                         label: '状态',
@@ -319,23 +325,9 @@
                         sort: true,
                         prop: 'status'
                     }, {
-                        label: '座右铭',
-                        width: '220',
+                        label: '角色名',
                         type: '',
-                        prop: 'motto'
-                    }, {
-                        label: '邮箱',
-                        width: '200',
-                        sort: true,
-                        type: '',
-                        prop: 'mail'
-                    }, {
-                        label: '创建日期',
-                        width: '',
-                        type: '',
-                        sort: true,
-                        prop: 'createTime',
-                        format: this.commons.dateFormat
+                        prop: 'rolename'
                     }
                 ],
                 rowSelections: [],
@@ -348,6 +340,57 @@
             this.selectData();
         },*/
         methods: {
+            closeDialog() {
+                this.authority = [];
+            },
+            editAuthority(val) {
+                // 将选择的权限信息过滤部分无用的，形成set集合
+                let set = new Set();
+                val.forEach((list) => {
+                    list.filter(function (item) {
+                        return item!="*";
+                    }).forEach((value) => {
+                        set.add(value);
+                    })
+                });
+                let data = {
+                    'role': this.curRole,
+                    'resources': set
+                };
+                let _this = this;
+                this.$axios.post('/role/updateAuthority', data).then(function (response) {
+                    _this.commons.kMessage(response.data.msg, 'success');
+                    _this.handleVisible = false;
+                }).catch(function (error) {
+                })
+            },
+            authorityChange(val) {
+                console.log(JSON.stringify(val));
+            },
+            handleAuthority(index, row) {
+                this.handleVisible = true;
+                this.authority = [];
+                this.loading = true;
+                let _this = this;
+                this.$axios.get('/role/authority', {
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    params: {
+                        roleId: row.roleId
+                    }
+                }).then(function (response) {
+                    _this.curRole = row.roleId;
+                    let data = response.data.data;
+                    //if (_this.options.length != data.all.length) {
+                        _this.options = data.all || [];
+                    //}
+                    _this.authority = data.role || [];
+                    console.info(JSON.stringify(data.role));
+                    console.info(JSON.stringify(_this.authority));
+                    _this.loading = false;
+                }).catch(function (error) {
+
+                });
+            },
             selectData() {
                 let data = this.searchTab;
                 let searchParam = {
@@ -356,7 +399,7 @@
                     "data": data
                 };
                 let _this = this;
-                _this.$axios.post('/user/search', searchParam)
+                _this.$axios.post('/role/search', searchParam)
                     .then(function (response) {
                         _this.tableData = response.data.data;
                         _this.total = response.data.count
@@ -381,13 +424,12 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.addForm.password=this.$getRsaCode(this.addForm.password);
-                        this.$axios.post("/user/add",this.addForm)
-                            .then(function(response){
-                                _this.commons.kMessage("新增用户成功！", 'success');
+                        this.$axios.post("/role/add", this.addForm)
+                            .then(function (response) {
+                                _this.commons.kMessage("新增角色成功！", 'success');
                                 _this.selectData();
                             })
-                            .catch(function(error){
+                            .catch(function (error) {
                             });
                         this.addVisible = false;
                         return true;
@@ -410,13 +452,12 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.editForm.password=this.$getRsaCode(this.editForm.password);
-                        this.$axios.post("/user/update",this.editForm)
-                            .then(function(response){
-                                _this.commons.kMessage("修改用户成功！", 'success');
+                        this.$axios.post("/role/update", this.editForm)
+                            .then(function (response) {
+                                _this.commons.kMessage("修改角色成功！", 'success');
                                 _this.selectData();
                             })
-                            .catch(function(error){
+                            .catch(function (error) {
                             });
                         this.editVisible = false;
                         return true;
@@ -431,14 +472,14 @@
                 if (this.rowSelections.length < 1) {
                     this.commons.kMessage("请选择至少一条数据！", 'info');
                 } else {
-                  let primaryKey = [];
-                  this.rowSelections.forEach(function(item){
-                      primaryKey.push(item.uniqueId);
-                  });
+                    let primaryKey = [];
+                    this.rowSelections.forEach(function (item) {
+                        primaryKey.push(item.roleId);
+                    });
                     let _this = this;
-                    this.$axios.post("/user/delete", { primaryKey})
+                    this.$axios.post("/role/delete", primaryKey)
                         .then(function (response) {
-                            _this.commons.kMessage("删除用户成功！", 'success');
+                            _this.commons.kMessage("删除角色成功！", 'success');
                             _this.currentPage = 1;
                             _this.selectData();
                         })
@@ -451,19 +492,18 @@
                 if (this.rowSelections.length !== 1) {
                     this.commons.kMessage("请选择一条数据！", 'info');
                 } else {
-                  this.imgVisible=true;
-                  this.username=this.rowSelections[0].username;
+                    this.imgVisible = true;
+                    this.roleCode = this.rowSelections[0].roleCode;
                 }
             },
             resetForm() {
                 this.searchTab = {
-                    username: '',
-                    createTime: '',
+                    roleCode: '',
                     status: []
                 };
             },
             onQuery() {
-                this.currentPage=1;
+                this.currentPage = 1;
                 this.selectData();
             }
         }

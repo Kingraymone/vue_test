@@ -3,7 +3,7 @@
     <!--首部-->
     <div class="crumbs">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item><i class="el-icon-s-custom"></i> 用户管理</el-breadcrumb-item>
+        <el-breadcrumb-item><i class="el-icon-s-custom"></i> 资源列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="myContainer">
@@ -12,36 +12,31 @@
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <div>
             <el-form :inline="true">
-              <el-form-item label="用户名">
+              <el-form-item label="资源名称">
                 <el-input
-                  placeholder="请输入内容"
-                  v-model="searchTab.username"
+                  v-model="searchTab.resourceName"
                   clearable
                   size="small"
-                  prefix-icon="el-icon-search">
+                  >
                 </el-input>
               </el-form-item>
-              <el-form-item label="创建日期">
-                <el-date-picker
-                  v-model="searchTab.createTime"
-                  type="date"
-                  size="small"
-                  format="yyyy-MM-dd"
-                  value-format="yyyyMMdd"
-                  placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-              <el-form-item label="用户状态">
-                <el-select
-                  v-model="searchTab.status"
-                  multiple
-                  collapse-tags
+              <el-form-item label="资源代码">
+                <el-input
+                  placeholder="view|edit"
+                  v-model="searchTab.resourceCode"
                   clearable
                   size="small"
-                  placeholder="请选择">
-                  <el-option label="正常" value="0"></el-option>
-                  <el-option label="冻结" value="1"></el-option>
-                </el-select>
+                  >
+                </el-input>
+              </el-form-item>
+              <el-form-item label="资源目录">
+                <el-input
+                  placeholder="系统首页"
+                  v-model="searchTab.resourceCategory"
+                  clearable
+                  size="small"
+                  >
+                </el-input>
               </el-form-item>
               <el-form-item>
                 <el-button size="small" type="primary" @click="onQuery">查询</el-button>
@@ -64,7 +59,6 @@
           <el-tooltip class="item" content="删除">
             <el-button type="danger" icon="el-icon-delete" @click="handleDelete"></el-button>
           </el-tooltip>
-          <el-button type="primary" @click="iconUpload">头像上传<i class="el-icon-upload el-icon--right"></i></el-button>
         </el-button-group>
       </el-row>
       <!--表格-->
@@ -114,7 +108,7 @@
     </div>
 
     <!--新增表单-->
-    <el-dialog ref="addDialog" title="新增"
+    <el-dialog ref="addDialog" resourceCode="新增"
                width="40%"
                :visible.sync="addVisible"
                :close-on-click-modal="false">
@@ -125,35 +119,21 @@
       >
         <el-row>
           <el-col :span="10">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="addForm.username" maxlength="10"></el-input>
+            <el-form-item label="资源名称" prop="resourceName">
+              <el-input v-model="addForm.resourceName"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="addForm.nickname"></el-input>
+            <el-form-item label="资源代码" prop="resourceCode">
+              <el-input v-model="addForm.resourceCode"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="密码" prop="password">
-              <el-input placeholder="请输入密码" v-model="addForm.password" show-password></el-input>
+            <el-form-item label="资源目录" prop="resourceCategory">
+              <el-input v-model="addForm.resourceCategory"></el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="10" :offset="4">
-            <el-form-item label="座右铭" prop="motto">
-              <el-input v-model="addForm.motto"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="邮箱" prop="mail">
-              <el-input v-model="addForm.mail"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10" :offset="4">
           </el-col>
         </el-row>
       </el-form>
@@ -163,7 +143,7 @@
       </div>
     </el-dialog>
     <!--修改表单-->
-    <el-dialog ref="editDialog" title="修改"
+    <el-dialog ref="editDialog" resourceCode="修改"
                width="40%"
                :visible.sync="editVisible"
                :close-on-click-modal="false">
@@ -174,43 +154,20 @@
       >
         <el-row>
           <el-col :span="10">
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="editForm.username" maxlength="10" disabled></el-input>
+            <el-form-item label="资源名称" prop="resourceName">
+              <el-input v-model="editForm.resourceName" ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="10" :offset="4">
-            <el-form-item label="昵称" prop="nickname">
-              <el-input v-model="editForm.nickname"></el-input>
+            <el-form-item label="资源代码" prop="resourceCode">
+              <el-input v-model="editForm.resourceCode"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="10">
-            <el-form-item label="密码" prop="password">
-              <el-input placeholder="请输入密码" v-model="editForm.password" show-password></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10" :offset="4">
-            <el-form-item label="座右铭" prop="motto">
-              <el-input v-model="editForm.motto"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="10">
-            <el-form-item label="邮箱" prop="mail">
-              <el-input v-model="editForm.mail"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="10" :offset="4">
-            <el-form-item label="状态" prop="status">
-              <el-select
-                v-model="editForm.status"
-                clearable
-                placeholder="请选择">
-                <el-option label="正常" value="0"></el-option>
-                <el-option label="冻结" value="1"></el-option>
-              </el-select>
+            <el-form-item label="资源目录" prop="resourceCategory">
+              <el-input v-model="editForm.resourceCategory"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -221,77 +178,44 @@
       </div>
     </el-dialog>
 
-    <el-dialog ref="imgDialog" title="头像上传"
-               width="40%"
-               :visible.sync="imgVisible"
-               :close-on-click-modal="true">
-      <upload :username="username" @closeUpload="imgVisible=false"></upload>
-    </el-dialog>
   </div>
 
 </template>
 
 <script>
-    import upload from '../../components/main/UpLoadImg'
     export default {
-        name: "user",
-        components:{
-            upload
-        },
+        name: "Resource",
         data() {
-            const item = {
-                createTime: '2016-05-02',
-                username: '王小虎',
-                nickname: '小虎',
-                motto: '上海市普陀区金沙江路 1518 弄',
-                mail: '5232323@qq.com',
-                status: '1'
-            };
-            const item2 = {
-                createTime: '2016-05-03',
-                username: '范德萨',
-                nickname: '分',
-                motto: '上海市普陀区金沙江路 1518 弄',
-                mail: '523232223@qq.com',
-                status: '0'
-            };
             return {
-                username:'',
                 addVisible: false,
                 editVisible: false,
-                imgVisible:false,
                 addForm: {
-                    username: '',
-                    password: '',
-                    nickname: '',
-                    motto: '',
-                    mail: ''
+                    resourceName: '',
+                    resourceCategory: '',
+                    resourceCode: ''
                 },
                 editForm: {
-                    uniqueId: '',
-                    username: '',
-                    password: '',
-                    nickname: '',
-                    motto: '',
-                    mail: '',
-                    status: ''
+                    id: '',
+                    resourceName: '',
+                    resourceCode: '',
+                    resourceCategory: ''
                 },
                 rules: {
-                    username: [
-                        {required: true, message: '请输入用户名', trigger: 'blur'}
+                    resourceName: [
+                        {required: true, message: '请输入资源名称', trigger: 'blur'}
                     ],
-                    password: [
-                        {required: true, message: '请输入密码', trigger: 'blur'}
+                    resourceCode: [
+                        {required: true, message: '请输入资源代码', trigger: 'blur'}
                     ],
-                    nickname: [
-                        {required: true, message: '请输入昵称', trigger: 'blur'}
+                    resourceCategory: [
+                        {required: true, message: '请输入资源目录', trigger: 'blur'}
                     ]
                 },
                 formLabelWidth: 150,
                 searchTab: {
-                    username: '',
-                    createTime: '',
-                    status: []
+                    resourceCode: '',
+                    resourceCategory: '',
+                    resourceName:''
                 },
                 tableData: [],
                 tcolumn: [
@@ -301,41 +225,22 @@
                         type: 'selection',
                         prop: ''
                     }, {
-                        label: '用户名',
-                        width: '120',
-                        type: '',
-                        prop: 'username',
-                        sort: true
-                    }, {
-                        label: '昵称',
-                        width: '120',
-                        type: '',
-                        prop: 'nickname',
-                        sort: true
-                    }, {
-                        label: '状态',
-                        width: '120',
-                        type: '',
-                        sort: true,
-                        prop: 'status'
-                    }, {
-                        label: '座右铭',
-                        width: '220',
-                        type: '',
-                        prop: 'motto'
-                    }, {
-                        label: '邮箱',
+                        label: '资源名称',
                         width: '200',
-                        sort: true,
                         type: '',
-                        prop: 'mail'
+                        prop: 'resourceName',
+                        sort: true
                     }, {
-                        label: '创建日期',
-                        width: '',
+                        label: '资源代码',
+                        width: '250',
                         type: '',
-                        sort: true,
-                        prop: 'createTime',
-                        format: this.commons.dateFormat
+                        prop: 'resourceCode',
+                        sort: true
+                    }, {
+                        label: '资源目录',
+                        type: '',
+                        prop: 'resourceCategory',
+                        sort: true
                     }
                 ],
                 rowSelections: [],
@@ -356,7 +261,7 @@
                     "data": data
                 };
                 let _this = this;
-                _this.$axios.post('/user/search', searchParam)
+                _this.$axios.post('/resource/search', searchParam)
                     .then(function (response) {
                         _this.tableData = response.data.data;
                         _this.total = response.data.count
@@ -381,10 +286,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.addForm.password=this.$getRsaCode(this.addForm.password);
-                        this.$axios.post("/user/add",this.addForm)
+                        this.$axios.post("/resource/add",this.addForm)
                             .then(function(response){
-                                _this.commons.kMessage("新增用户成功！", 'success');
+                                _this.commons.kMessage("新增资源成功！", 'success');
                                 _this.selectData();
                             })
                             .catch(function(error){
@@ -410,10 +314,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.editForm.password=this.$getRsaCode(this.editForm.password);
-                        this.$axios.post("/user/update",this.editForm)
+                        this.$axios.post("/resource/update",this.editForm)
                             .then(function(response){
-                                _this.commons.kMessage("修改用户成功！", 'success');
+                                _this.commons.kMessage("修改资源成功！", 'success');
                                 _this.selectData();
                             })
                             .catch(function(error){
@@ -431,14 +334,14 @@
                 if (this.rowSelections.length < 1) {
                     this.commons.kMessage("请选择至少一条数据！", 'info');
                 } else {
-                  let primaryKey = [];
-                  this.rowSelections.forEach(function(item){
-                      primaryKey.push(item.uniqueId);
-                  });
+                    let primaryKey = [];
+                    this.rowSelections.forEach(function(item){
+                        primaryKey.push(item.id);
+                    });
                     let _this = this;
-                    this.$axios.post("/user/delete", { primaryKey})
+                    this.$axios.post("/resource/delete", primaryKey)
                         .then(function (response) {
-                            _this.commons.kMessage("删除用户成功！", 'success');
+                            _this.commons.kMessage("删除资源成功！", 'success');
                             _this.currentPage = 1;
                             _this.selectData();
                         })
@@ -451,15 +354,14 @@
                 if (this.rowSelections.length !== 1) {
                     this.commons.kMessage("请选择一条数据！", 'info');
                 } else {
-                  this.imgVisible=true;
-                  this.username=this.rowSelections[0].username;
+                    this.imgVisible=true;
+                    this.resourceCode=this.rowSelections[0].resourceCode;
                 }
             },
             resetForm() {
                 this.searchTab = {
-                    username: '',
-                    createTime: '',
-                    status: []
+                    resourceCode: '',
+                    resourceCategory: ''
                 };
             },
             onQuery() {

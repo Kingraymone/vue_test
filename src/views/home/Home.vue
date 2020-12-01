@@ -26,6 +26,7 @@
                 address: '上海市普陀区金沙江路 1518 弄1'
             };
             return {
+                value:'',
                 tableData: Array(20).fill(item)
             }
         }
