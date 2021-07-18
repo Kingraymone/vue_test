@@ -35,6 +35,9 @@
           <el-tooltip class="item" content="新增">
             <el-button type="primary" icon="el-icon-plus" @click="handleAdd"></el-button>
           </el-tooltip>
+          <el-tooltip class="item" content="修改">
+            <el-button type="info" icon="el-icon-edit" @click="handleEdit"></el-button>
+          </el-tooltip>
           <el-tooltip class="item" content="删除">
             <el-button type="danger" icon="el-icon-delete" @click="handleDelete"></el-button>
           </el-tooltip>
@@ -111,6 +114,35 @@
       </div>
     </el-dialog>
 
+    <!--修改表单-->
+    <el-dialog ref="editDialog" title="修改"
+               width="40%"
+               :visible.sync="editVisible"
+               :close-on-click-modal="false">
+      <el-form ref="editForm"
+               :model="editForm"
+               :rules="rules"
+               size="mini"
+      >
+        <el-row>
+          <el-col :span="10">
+            <el-form-item label="基金代码" prop="fundcode">
+              <el-input v-model="editForm.fundcode" disabled maxlength="10"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="10" :offset="4">
+            <el-form-item label="投资范围" prop="investRange">
+              <el-input v-model="editForm.investRange"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="editVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="editSubmitForm('editForm')">提 交</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 
 </template>
@@ -120,9 +152,15 @@
         name: "user",
         data() {
             return {
+                editVisible: false,
                 addVisible: false,
                 addForm: {
                     fundcode: ''
+                },
+                editForm: {
+                    uniqueId:'',
+                    fundcode: '',
+                    investRange:''
                 },
                 rules: {
                     fundcode: [
@@ -156,13 +194,15 @@
                         fixed:"left"
                     }, {
                         label: '投资范围',
-                        width: '120',
+                        width: '200',
                         type: '',
+                        sort: true,
                         prop: 'investRange'
                     }, {
                         label: '申购费',
                         width: '100',
                         type: '',
+                        sort: true,
                         prop: 'purchaseFare'
                     }, {
                         label: '赎回费',
@@ -230,7 +270,7 @@
                 ],
                 rowSelections: [],
                 total: 0,
-                pageSize: 5,
+                pageSize: 10,
                 currentPage: 1
             }
         },
@@ -304,9 +344,9 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let _this = this;
-                        this.$axios.post("/user/update",this.editForm)
+                        this.$axios.post("/fund/edit",this.editForm)
                             .then(function(response){
-                                _this.commons.kMessage("修改用户成功！", 'success');
+                                _this.commons.kMessage("修改基金成功！", 'success');
                                 _this.selectData();
                             })
                             .catch(function(error){
